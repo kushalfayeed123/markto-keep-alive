@@ -1,0 +1,27 @@
+name: Keep Render services alive
+
+on:
+  schedule:
+    # Every 10 minutes (UTC). GitHub may delay runs by a few minutes at busy times.
+    - cron: "*/10 * * * *"
+  workflow_dispatch: # allows manual runs from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false # one failing service doesn't stop the other
+      matrix:
+        url:
+          - https://markto-agent.onrender.com/health
+          - https://markto-be.onrender.com/health
+    steps:
+      - name: Ping ${{ matrix.url }}
+        run: |
+          curl --silent --show-error --fail \
+            --max-time 90 \
+            --retry 2 --retry-delay 5 --retry-all-errors \
+            --write-out "HTTP %{http_code} in %{time_total}s\n" \
+            --output /dev/null \
+            "${{ matrix.url }}"
