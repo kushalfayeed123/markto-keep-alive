@@ -14,8 +14,8 @@ jobs:
       fail-fast: false # one failing service doesn't stop the other
       matrix:
         url:
-          - https://markto-agent.onrender.com/health
-          - https://markto-be.onrender.com/health
+          - https://agent.markto.site/health
+          - https://api.markto.site/health
     steps:
       - name: Ping ${{ matrix.url }}
         run: |
